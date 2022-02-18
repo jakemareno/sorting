@@ -2,11 +2,12 @@ import random
 from turtle import Turtle, Screen, tracer, update, done, colormode
 from time import sleep
 
-NUMBER_OF_ELEMENTS = 50
-WIDTH = 500
+NUMBER_OF_ELEMENTS = 30
+WIDTH = 510
 HEIGHT = WIDTH
 SCALE = int(WIDTH/NUMBER_OF_ELEMENTS)
 DELAY = 0.001
+PAUSE = 0.5
 SHUFFLES = 2
 
 tracer(0,0)
@@ -16,7 +17,7 @@ colormode(255)
 screen = Screen()
 screen.bgcolor("black")
 screen.title("Sorting!")
-screen.setup(WIDTH+SCALE*2, HEIGHT+SCALE*2)
+screen.setup(WIDTH+SCALE*3, HEIGHT+SCALE*3)
 
 t = Turtle()
 t.color("black")
@@ -25,21 +26,17 @@ t.pensize(SCALE)
 t.speed(0)
 t.penup()
 
-def random_nums() -> list:
+
+def set_nums():
     nums = []
-    randomized_list = []
 
     for i in range(1, NUMBER_OF_ELEMENTS + 1):
         nums.append(i)
+    
+    draw_nums(nums)
 
-    for j in range(1, NUMBER_OF_ELEMENTS + 1):
-        num = random.choice(nums)
-        randomized_list.append(num)
-        nums.remove(num)
+    return nums
 
-    draw_nums(randomized_list)
-
-    return randomized_list
 
 
 def draw_nums(nums):
@@ -158,42 +155,76 @@ def shaker_sort(nums):
         while j > len(nums) - i:
             if nums[j] < nums[j-1]:
                 nums[j], nums[j-1] = nums[j-1], nums[j]
-                draw_nums_highlight(nums, j)
+                draw_nums_highlight(nums, j-1)
             j -= 1
         i -= 1
 
     return nums
 
 
+def odd_even_sort(nums):
+    sorted = False
+
+    while not sorted:
+        sorted = True
+        for i in range(1, len(nums)-1, 2):
+            if nums[i] > nums[i+1]:
+                nums[i], nums[i+1] = nums[i+1], nums[i]
+                draw_nums_highlight(nums, i+1)
+                sorted = False
+        
+        for j in range(0, len(nums)-1, 2):
+            if nums[j] > nums[j+1]:
+                nums[j], nums[j+1] = nums[j+1], nums[j]
+                draw_nums_highlight(nums, j+1)
+                sorted = False
+
+    return nums
+
 
 def main():
-    nums = random_nums()
-    sleep(1)
+    nums = set_nums()
+    sleep(PAUSE)
+
+    nums = shuffle_nums(nums)
+    sleep(PAUSE)
 
     screen.title("Bubble Sort")
     nums = bubble_sort(nums)
     draw_nums(nums)
-    sleep(1)
+    sleep(PAUSE)
 
     nums = shuffle_nums(nums)
-    sleep(1)
+    sleep(PAUSE)
 
     screen.title("Insertion Sort")
     nums = insertion_sort(nums)
     draw_nums(nums)
-    sleep(1)
+    sleep(PAUSE)
 
     nums = shuffle_nums(nums)
-    sleep(1)
+    sleep(PAUSE)
 
     screen.title("Shaker Sort")
     nums = shaker_sort(nums)
     draw_nums(nums)
-    sleep(1)
+    sleep(PAUSE)
 
-    #nums = random_nums()
-    #screen.title("Merge Sort")
-    #nums = merge_sort(nums)
+    nums = shuffle_nums(nums)
+    sleep(PAUSE)
+
+    """screen.title("Merge Sort")
+    nums = merge_sort(nums)
+    draw_nums(nums)
+    sleep(PAUSE)
+
+    nums = shuffle_nums(nums)
+    sleep(PAUSE)"""
+
+    screen.title("Odd-Even Sort")
+    nums = odd_even_sort(nums)
+    draw_nums(nums)
+    sleep(PAUSE)
 
 
 if __name__ == "__main__":
