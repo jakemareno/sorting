@@ -2,21 +2,23 @@ import random
 from turtle import Turtle, Screen, tracer, update, done, colormode
 from time import sleep
 
-NUMBER_OF_ELEMENTS = 30
-WIDTH = 510
+NUMBER_OF_ELEMENTS = 30 # length of array that will be sorted
+WIDTH = 600
+WIDTH -= WIDTH % NUMBER_OF_ELEMENTS # make width proportional
 HEIGHT = WIDTH
 SCALE = int(WIDTH/NUMBER_OF_ELEMENTS)
-DELAY = 0.001
-PAUSE = 0.5
-SHUFFLES = 2
+DELAY = 0.01 # delay between each canvas update 
+PAUSE = 0.5 # delay between shuffles and starting a new sort
+SHUFFLES = 2 # how many times in multiples of array length the array is shuffle in between sorts
+HIGHLIGHT_COLOR = (0,255,0) # color of highlighted bar when sorting
 
 tracer(0,0)
 colormode(255)
 
 
 screen = Screen()
-screen.bgcolor("black")
-screen.title("Sorting!")
+screen.bgcolor("white")
+screen.title("Sorting Demo")
 screen.setup(WIDTH+SCALE*3, HEIGHT+SCALE*3)
 
 t = Turtle()
@@ -32,21 +34,22 @@ def set_nums():
 
     for i in range(1, NUMBER_OF_ELEMENTS + 1):
         nums.append(i)
-    
-    draw_nums(nums)
 
     return nums
 
+
+def get_color(nums, i):
+    return (int(50 + nums[i]/NUMBER_OF_ELEMENTS*100),
+            int(50 + nums[i]/NUMBER_OF_ELEMENTS*175),
+            int(100 + nums[i]/NUMBER_OF_ELEMENTS*150)
+    )
 
 
 def draw_nums(nums):
     t.clear()
     for i in range(len(nums)):
-        red = int(255-nums[i]/NUMBER_OF_ELEMENTS*255)
-        green = int(abs(128-nums[i]/NUMBER_OF_ELEMENTS*255))
-        blue = int(nums[i]/NUMBER_OF_ELEMENTS*255)
         t.setpos(SCALE*i - WIDTH/2, -HEIGHT/2)
-        t.color((red, green, blue))
+        t.color(get_color(nums, i))
         t.pendown()
         t.forward(nums[i]*SCALE)
         t.penup()
@@ -58,13 +61,10 @@ def draw_nums(nums):
 def draw_nums_highlight(nums, highlight):
     t.clear()
     for i in range(len(nums)):
-        red = int(255-nums[i]/NUMBER_OF_ELEMENTS*255)
-        green = int(abs(128-nums[i]/NUMBER_OF_ELEMENTS*255))
-        blue = int(nums[i]/NUMBER_OF_ELEMENTS*255)
         t.setpos(SCALE*i - WIDTH/2, -HEIGHT/2)
-        t.color((red, green, blue))
+        t.color(get_color(nums, i))
         if i == highlight:
-            t.color((0,255,0))
+            t.color(HIGHLIGHT_COLOR)
         t.pendown()
         t.forward(nums[i]*SCALE)
         t.penup()
@@ -74,31 +74,23 @@ def draw_nums_highlight(nums, highlight):
 
 
 def shuffle_nums(nums):
+    screen.title("Shuffling...")
     for i in range(len(nums)*SHUFFLES):
         i = random.randint(0, NUMBER_OF_ELEMENTS-1)
         j = random.randint(0, NUMBER_OF_ELEMENTS-1)
         nums[i], nums[j] = nums[j], nums[i]
         draw_nums(nums)
 
-    return nums
 
-
-
-def bubble_sort(nums: list) -> list:
-    swaps = 0
-
+def bubble(nums):
     for i in range(len(nums)):
         for j in range(len(nums)-1-i):
             if nums[j] > nums[j+1]:
                 nums[j], nums[j+1] = nums[j+1], nums[j]
-                swaps += 1
                 draw_nums_highlight(nums, j+1)
 
-    print(swaps)
-    return nums
 
-
-def insertion_sort(nums):
+def insertion(nums):
     for i in range(1, len(nums)):
         key_item = nums[i]
         j = i - 1
@@ -108,43 +100,9 @@ def insertion_sort(nums):
             j -= 1
         nums[j + 1] = key_item
         draw_nums_highlight(nums, j+1)
-    return nums
 
 
-def merge(left, right):
-    if len(left) == 0:
-        return right
-
-    if len(right) == 0:
-        return left
-
-    result = []
-
-    index_left = index_right = 0
-    while len(result) < len(left) + len(right):
-        if left[index_left] <= right[index_right]:
-            result.append(left[index_left])
-            index_left += 1
-        else:
-            result.append(right[index_right])
-            index_right += 1
-        if index_right == len(right):
-            result += left[index_left:]
-            break
-        if index_left == len(left):
-            result += right[index_right:]
-            break
-    return result
-
-
-def merge_sort(nums):
-    if len(nums) < 2:
-        return nums
-    midpoint = len(nums) // 2
-    return merge(left=merge_sort(nums[:midpoint]), right=merge_sort(nums[midpoint:]))
-
-
-def shaker_sort(nums):
+def shaker(nums):
     i = len(nums) - 1
     while i > (len(nums)/2):
         for j in range(i):
@@ -159,10 +117,8 @@ def shaker_sort(nums):
             j -= 1
         i -= 1
 
-    return nums
 
-
-def odd_even_sort(nums):
+def odd_even(nums):
     sorted = False
 
     while not sorted:
@@ -179,52 +135,23 @@ def odd_even_sort(nums):
                 draw_nums_highlight(nums, j+1)
                 sorted = False
 
-    return nums
-
 
 def main():
+    sorts = [bubble, insertion, shaker, odd_even]
+
     nums = set_nums()
-    sleep(PAUSE)
-
-    nums = shuffle_nums(nums)
-    sleep(PAUSE)
-
-    screen.title("Bubble Sort")
-    nums = bubble_sort(nums)
     draw_nums(nums)
-    sleep(PAUSE)
+    sleep(2*PAUSE)
 
-    nums = shuffle_nums(nums)
-    sleep(PAUSE)
-
-    screen.title("Insertion Sort")
-    nums = insertion_sort(nums)
-    draw_nums(nums)
-    sleep(PAUSE)
-
-    nums = shuffle_nums(nums)
-    sleep(PAUSE)
-
-    screen.title("Shaker Sort")
-    nums = shaker_sort(nums)
-    draw_nums(nums)
-    sleep(PAUSE)
-
-    nums = shuffle_nums(nums)
-    sleep(PAUSE)
-
-    """screen.title("Merge Sort")
-    nums = merge_sort(nums)
-    draw_nums(nums)
-    sleep(PAUSE)
-
-    nums = shuffle_nums(nums)
-    sleep(PAUSE)"""
-
-    screen.title("Odd-Even Sort")
-    nums = odd_even_sort(nums)
-    draw_nums(nums)
-    sleep(PAUSE)
+    for sort in sorts:
+        shuffle_nums(nums)
+        sleep(PAUSE)
+        screen.title("Sort: " + sort.__name__)
+        sort(nums)
+        draw_nums(nums)
+        sleep(PAUSE)
+    
+    screen.title("Sort Demo (finished)")
 
 
 if __name__ == "__main__":
