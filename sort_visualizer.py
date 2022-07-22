@@ -7,7 +7,7 @@ WIDTH = 600
 WIDTH -= WIDTH % NUMBER_OF_ELEMENTS # make width proportional
 HEIGHT = WIDTH
 SCALE = int(WIDTH/NUMBER_OF_ELEMENTS)
-DELAY = 0.01 # delay between each canvas update 
+DELAY = 0.02 # delay between each canvas update 
 PAUSE = 0.5 # delay between shuffles and starting a new sort
 SHUFFLES = 2 # how many times in multiples of array length the array is shuffle in between sorts
 HIGHLIGHT_COLOR = (0,255,0) # color of highlighted bar when sorting
@@ -39,7 +39,7 @@ def set_nums():
 
 
 def get_color(nums, i):
-    return (int(50 + nums[i]/NUMBER_OF_ELEMENTS*100),
+    return (int(20 + nums[i]/NUMBER_OF_ELEMENTS*130),
             int(50 + nums[i]/NUMBER_OF_ELEMENTS*175),
             int(100 + nums[i]/NUMBER_OF_ELEMENTS*150)
     )
